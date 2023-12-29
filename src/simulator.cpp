@@ -3,9 +3,9 @@
 #include "include/lidar.h"
 #include "include/mapper.h"
 #include "include/viewer.h"
+#include "include/config.h"
 #include <QStyleOption>
 
-const double PI = 3.1415926535;
 
 Simulator *Simulator::ptr = nullptr;
 
@@ -31,7 +31,9 @@ Simulator::Simulator(QWidget *parent) :
     carLabel->setGeometry(QRect(0, 751, 48, 48));
     car = new Car(24, 775, -90, 24, 36);
 
-    map = new RMap(16, 16, true);
+    map = new RMap(MAPWIDTH, MAPWIDTH, true);
+
+    serial = new Serial("ttyS4");
 
     click = false;
 }
@@ -61,13 +63,13 @@ void Simulator::drawMap(QPainter &painter)
     for (int i = 0; i < map->getCol(); i++)
         for (int j = 0; j < map->getRow(); j++)
             if (map->query(i, j) == 1)
-                painter.drawRect(i * 50, j * 50, 50, 50);
+                painter.drawRect(i * BLOCKWIDTH, j * BLOCKWIDTH, BLOCKWIDTH, BLOCKWIDTH);
 
     //绘制起点和终点
-    painter.setBrush(QColor(255, 0, 0));
-    painter.drawRect(14 * 50, 0, 100, 100);
-    painter.setBrush(QColor(0, 0, 255));
-    painter.drawRect(0, 14 * 50, 100, 100);
+//    painter.setBrush(QColor(255, 0, 0));
+//    painter.drawRect(14 * 50, 0, 100, 100);
+//    painter.setBrush(QColor(0, 0, 255));
+//    painter.drawRect(0, 14 * 50, 100, 100);
 }
 
 void Simulator::keyPressEvent(QKeyEvent *event)
@@ -102,7 +104,7 @@ void Simulator::keyPressEvent(QKeyEvent *event)
 
     if (couldPass)
     {
-        carLabel->move(car->X() - 24, car->Y() - 24);//QLabel的坐标是矩形左上角坐标，需要转化一下
+        carLabel->move(car->X() - BLOCKWIDTH/2, car->Y() - BLOCKWIDTH/2);//QLabel的坐标是矩形左上角坐标，需要转化一下
 
         matrix.rotate(car->Angle() + 90);//这个旋转的角度也是需要调整的
         carLabel->setPixmap(QPixmap::fromImage(carImage.transformed(matrix)));
@@ -131,11 +133,11 @@ void Simulator::mousePressEvent(QMouseEvent *event)
     switch (event->button())
     {
         case Qt::LeftButton:
-            map->addIN(event->pos().y() / 50, event->pos().x() / 50, true);
+            map->addIN(event->pos().y() / BLOCKWIDTH, event->pos().x() / BLOCKWIDTH, true);
             update();
             break;
         case Qt::RightButton:
-            map->deleteOUT(event->pos().y() / 50, event->pos().x() / 50);
+            map->deleteOUT(event->pos().y() / BLOCKWIDTH, event->pos().x() / BLOCKWIDTH);
             update();
             break;
         default:
@@ -153,12 +155,12 @@ void Simulator::mouseMoveEvent(QMouseEvent *event)
 
     if (event->buttons() & Qt::LeftButton)
     {
-        map->addIN(event->pos().y() / 50, event->pos().x() / 50, true);
+        map->addIN(event->pos().y() / BLOCKWIDTH, event->pos().x() / BLOCKWIDTH, true);
         update();
     }
     else if (event->buttons() & Qt::RightButton)
     {
-        map->deleteOUT(event->pos().y() / 50, event->pos().x() / 50);
+        map->deleteOUT(event->pos().y() / BLOCKWIDTH, event->pos().x() / BLOCKWIDTH);
         update();
     }
 }
@@ -170,7 +172,7 @@ void Simulator::clearMap()
 
 void Simulator::creatNewMap()
 {
-    this->map = new RMap(16, 16, true);
+    this->map = new RMap(MAPWIDTH, MAPWIDTH, true);
 }
 
 void Simulator::setMouseClick()

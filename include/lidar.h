@@ -10,7 +10,7 @@ public:
     Lidar();
 
     //更新雷达扫描到的地图（模拟雷达扫描）
-    void update_lidarMap(int cx, int cy, RMap &map);
+    void update_lidarMap(int cx, int cy,RMap &map);
 
     //TODO 更新建立的地图（模拟建图）
     void buildMap();

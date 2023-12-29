@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui serialport
 
 # 如果 QT 版本大于 4（Qt5 或更高版本），则需要添加 widgets 模块，该模块包含所有控件类。
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -34,7 +34,8 @@ SOURCES += \
     src/mapper.cpp \
     src/logprinter.cpp \
     src/console.cpp \
-    src/lidar.cpp
+    src/lidar.cpp \
+    src/serial.cpp
 
 HEADERS += \
     include/mainwindow.h \
@@ -45,7 +46,9 @@ HEADERS += \
     include/mapper.h \
     include/logprinter.h \
     include/console.h \
-    include/lidar.h
+    include/lidar.h \
+    include/config.h \
+    include/serial.h
 
 RESOURCES += \
     source/car.qrc

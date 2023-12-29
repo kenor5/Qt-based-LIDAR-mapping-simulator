@@ -8,6 +8,7 @@
 
 #include "include/car.h"
 #include "include/rmap.h"
+#include "include/serial.h"
 
 
 //仿真环境
@@ -46,6 +47,8 @@ private:
     Car *car;
 
     RMap *map;
+
+    Serial *serial;
 
     bool click;
 

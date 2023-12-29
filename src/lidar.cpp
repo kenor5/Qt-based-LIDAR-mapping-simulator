@@ -1,11 +1,11 @@
 #include "include/lidar.h"
+#include "include/config.h"
 #include <cmath>
-
-const double PI = 3.1415926535;
+#include <QDebug>
 
 Lidar::Lidar()
 {
-    originMap = new RMap(9, 9, false, 40, 40);
+    originMap = new RMap(LIDAR_SIGHT_WIDTH, LIDAR_SIGHT_WIDTH, false, 40, 40);
 
     lidarMap = new RMap(100, 100, false, 4, 4);
 
@@ -16,16 +16,16 @@ Lidar::Lidar()
 }
 
 //根据车子的坐标（x，y）和障碍物的地图 map 更新雷达看到的障碍物
-void Lidar::update_lidarMap(int cx, int cy, RMap &map)
+void Lidar::update_lidarMap(int cx, int cy,RMap &map)
 {
     this->clearMap();
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < LIDAR_SIGHT_WIDTH; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < LIDAR_SIGHT_WIDTH; j++)
         {
-            int col = cx - 4 + i;
-            int row = cy - 4 + j;
+            int col = cx - LIDAR_SIGHT_WIDTH/2 + i;
+            int row = cy - LIDAR_SIGHT_WIDTH/2 + j;
             if (col < 0 || col > 15)
                 originMap->addIN(i, j);
             else if (row < 0 || row > 15)
@@ -35,22 +35,22 @@ void Lidar::update_lidarMap(int cx, int cy, RMap &map)
         }
     }
 
-    double step = 0.015;//步长，确定雷达扫描的精度
     int x_0 = 200;//中心点
     int y_0 = 200;//中心点
 
-    for (double angle = 0.00; angle < 2 * PI; angle += step)
+    for (int cnt = 0; cnt < 360; cnt += LIDAR_SCAN_STEP)
     {
+        double angle = PI * cnt/180;
         int x = 0;
         int y = 0;
         int m, n;
 
-        for (int i = 0; i < 284; i += 1)
+        for (int i = 0; i < LIDAR_SCAN_DISTANCE_LIMIT; i += 1)
         {
             x = x_0 + i * cos(angle) + 8;
             y = y_0 + i * sin(angle) + 8;
 
-            if (x > 400 || y > 400 || x < 0 || y < 0)
+            if (x > MAPPIXWIDTH || y > MAPPIXWIDTH || x < 0 || y < 0)
                 break;
 
             if (originMap->query(x / 50, y / 50))
@@ -69,21 +69,21 @@ void Lidar::update_lidarMap(int cx, int cy, RMap &map)
 void Lidar::buildMap()
 {
     //没有移动或者移动很小（比如原地旋转导致的移动）则不更新地图
-    if ((car_x + 3) / 50 == (last_x + 1) / 50 && (car_y + 3) / 50 == (last_y + 1) / 50)
+    if ((car_x + 3) / BLOCKWIDTH == (last_x + 1) / BLOCKWIDTH && (car_y + 3) / BLOCKWIDTH == (last_y + 1) / BLOCKWIDTH)
         return;
 
     //把雷达扫描的障碍物更新到地图中，
     int fix = 0;
-    for (int i = 0; i < lidarMap->getCol(); i = i + 1)
+    for (int i = 0; i < lidarMap->getCol(); i++)
     {
-        for (int j = 0; j < lidarMap->getRow(); j = j + 1)
+        for (int j = 0; j < lidarMap->getRow(); j++)
         {
             //模拟界面中的障碍物坐标
             int x = car_x + 4 * (i - 50);
             int y = car_y + 4 * (j - 50);
             //转化为保存的地图中的坐标
-            x = x / 4.0 - 4.8;
-            y = y / 4.0 - 5.0;
+            x = x / 4.0 + OFFSET_CAR_LIDAR_GLOBAL_X;
+            y = y / 4.0 + OFFSET_CAR_LIDAR_GLOBAL_Y;
             if (x >= 0 && x < bMap->getCol() && y >= 0 && y < bMap->getRow())
             {
                 if (lidarMap->query(i, j))
@@ -127,11 +127,11 @@ RMap *Lidar::getLidarMap()
 
 RMap *Lidar::getLidarMapTurn()
 {
-    RMap *Tmap = new RMap(100, 100, false, 4, 4);
+    RMap *Tmap = new RMap(lidarMap->getRow(), lidarMap->getCol(), false, lidarMap->getBlockWidth(), lidarMap->getBlockHeight());
     Tmap->clear();
 
-    int x_0 = 200;//中心点
-    int y_0 = 200;//中心点
+    int x_0 = lidarMap->getMapWidth()/2;//中心点
+    int y_0 = lidarMap->getMapHeight()/2;
 
     for (int i = 0; i <= lidarMap->getRow(); i++)
     {
@@ -139,11 +139,11 @@ RMap *Lidar::getLidarMapTurn()
         {
             if (lidarMap->query(i, j) == 1)
             {
-                double xm = i * 4 - 22;
-                double ym = j * 4 - 20;
+                double xm = i * lidarMap->getBlockWidth() + OFFSET_CAR_LIDAR_X;
+                double ym = j * lidarMap->getBlockHeight() + OFFSET_CAR_LIDAR_Y;
                 int x = x_0 + (xm - x_0) * cos(car_angle) + (ym - y_0) * sin(car_angle);
                 int y = y_0 + (ym - y_0) * cos(car_angle) - (xm - x_0) * sin(car_angle);
-                Tmap->addIN(y / 4, x / 4);
+                Tmap->addIN(y / lidarMap->getBlockWidth(), x / lidarMap->getBlockHeight());
             }
         }
     }
