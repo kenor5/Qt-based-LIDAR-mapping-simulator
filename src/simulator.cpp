@@ -104,7 +104,7 @@ void Simulator::keyPressEvent(QKeyEvent *event)
 
     if (couldPass)
     {
-        carLabel->move(car->X() - BLOCKWIDTH/2, car->Y() - BLOCKWIDTH/2);//QLabel的坐标是矩形左上角坐标，需要转化一下
+        carLabel->move(car->X()/2 - BLOCKWIDTH, car->Y()/2 - BLOCKWIDTH);//QLabel的坐标是矩形左上角坐标，需要转化一下
 
         matrix.rotate(car->Angle() + 90);//这个旋转的角度也是需要调整的
         carLabel->setPixmap(QPixmap::fromImage(carImage.transformed(matrix)));

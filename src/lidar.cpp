@@ -1,5 +1,6 @@
 #include "include/lidar.h"
 #include "include/config.h"
+#include "include/logprinter.h"
 #include <cmath>
 #include <QDebug>
 
@@ -9,7 +10,7 @@ Lidar::Lidar()
 
     lidarMap = new RMap(100, 100, false, 4, 4);
 
-    bMap = new RMap(200, 200, false, 2, 2);
+    bMap = new RMap(400, 400, false, 1, 1);
 
     this->clearMap();
     this->reMap();
@@ -26,13 +27,18 @@ void Lidar::update_lidarMap(int cx, int cy,RMap &map)
         {
             int col = cx - LIDAR_SIGHT_WIDTH/2 + i;
             int row = cy - LIDAR_SIGHT_WIDTH/2 + j;
-            if (col < 0 || col > 15)
+            if (col < 0 || col > MAPWIDTH-1)
                 originMap->addIN(i, j);
-            else if (row < 0 || row > 15)
+            else if (row < 0 || row > MAPWIDTH-1)
                 originMap->addIN(i, j);
             else if (map.query(col, row))
                 originMap->addIN(i, j);
+
         }
+        std::string str = "";
+        for (int j = 0; j < LIDAR_SIGHT_WIDTH; j++)
+            str += std::to_string(int(originMap->query(i, j)));
+        LogPrinter::getLogPrinter()->printLog(str);
     }
 
     int x_0 = 200;//中心点

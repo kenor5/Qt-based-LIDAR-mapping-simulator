@@ -1,8 +1,7 @@
 #include <cmath>
-
+#include "include/config.h"
 #include "include/car.h"
 
-const double PI = 3.1415926535;
 
 Rectangle createRect(int x, int y, int height, int width, double angle)
 {
@@ -19,6 +18,8 @@ Car::Car(int x, int y, double angle, int height, int width)
 {
     this->rect_c = createRect(x, y, height, width, angle);
     this->lidar = new Lidar();
+    this->vol = 0;
+    this->dir = 0;
 }
 
 //车子的移动逻辑，可以移动则返回true并且更新车的位置信息

@@ -50,7 +50,7 @@ void Mapper::draw(QPainter &painter)
     //设置填充的颜色
     painter.setBrush(QColor(255, 0, 200));
 
-    painter.drawRect(x, y, 5, 5);
+    painter.drawRect(x/2, y/2, 5, 5);
 
     //绘制三角区块(这里将跟踪小车的位置以及角度！)
     //QPainterPath path;
@@ -64,12 +64,12 @@ void Mapper::draw(QPainter &painter)
         return;
 
     painter.setBrush(QColor(0, 255, 255));
-    for (int i = 0; i <= 200; i++)
+    for (int i = 0; i <= map->getCol(); i++)
     {
-        for (int j = 0; j <= 200; j++)
+        for (int j = 0; j <= map->getRow(); j++)
         {
             if (map->query(i, j) == 1)
-                painter.drawRect(i * 2, j * 2, 3, 3);
+                painter.drawRect(i, j, 3, 3);
         }
     }
 }

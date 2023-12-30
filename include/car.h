@@ -10,6 +10,7 @@ typedef struct Rectangle
     int height;//矩形长
     int width;//矩形宽
     double angle;//矩形角度，采用角度制，定义沿x轴正方向时为0，且顺时针增加。
+
 } Rectangle;
 
 //实现车子的逻辑代码（碰撞检测、移动转向等）
@@ -36,6 +37,9 @@ private:
     //使用矩形来描述小车的位置信息
     //注意：为了减少小车旋转时的计算量，该矩形变量的坐标为小车的中心点坐标！！！
     Rectangle rect_c{};
+
+    int vol; // 速度 [-30, 30]
+    int dir; // 转角 [-30, 30]
 
     //小车的雷达
     Lidar *lidar;
