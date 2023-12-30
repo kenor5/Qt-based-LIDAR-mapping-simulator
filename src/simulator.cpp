@@ -5,6 +5,9 @@
 #include "include/viewer.h"
 #include "include/config.h"
 #include <QStyleOption>
+#include <QDebug>
+
+
 
 
 Simulator *Simulator::ptr = nullptr;
@@ -33,10 +36,17 @@ Simulator::Simulator(QWidget *parent) :
 
     map = new RMap(MAPWIDTH, MAPWIDTH, true);
 
-    serial = new Serial("ttyS4");
+//    serial = new Serial("ttyS4");
 
     click = false;
+
+    timerID = startTimer(100);
+    if (timerID == 0)
+       qDebug() << "start timer error";
+
 }
+
+
 
 void Simulator::paintEvent(QPaintEvent *event)
 {
@@ -74,56 +84,28 @@ void Simulator::drawMap(QPainter &painter)
 
 void Simulator::keyPressEvent(QKeyEvent *event)
 {
-    bool couldPass = false;
-    bool rightKey = false;
-    QMatrix matrix;
+    int step = 1;
 
     switch (event->key())
     {
         case Qt::Key_Up:
-            couldPass = car->move_car(1, *map);
-            rightKey = true;
+            car->setVol(step);
             break;
         case Qt::Key_Down:
-            couldPass = car->move_car(2, *map);
-            rightKey = true;
+            car->setVol(-step);
             break;
         case Qt::Key_Right:
-            couldPass = car->move_car(3, *map);
-            rightKey = true;
+            car->setDir(step);
             break;
         case Qt::Key_Left:
-            couldPass = car->move_car(4, *map);
-            rightKey = true;
+            car->setDir(-step);
             break;
         default:
-            break;
+            return;
     }
-    if (!rightKey)
-        return;
 
-    if (couldPass)
-    {
-        carLabel->move(car->X()/2 - BLOCKWIDTH, car->Y()/2 - BLOCKWIDTH);//QLabel的坐标是矩形左上角坐标，需要转化一下
 
-        matrix.rotate(car->Angle() + 90);//这个旋转的角度也是需要调整的
-        carLabel->setPixmap(QPixmap::fromImage(carImage.transformed(matrix)));
 
-        Viewer::getViewer()->updateViewer(car->getLidar()->getLidarMapTurn());
-        Mapper::getMapper()->updateMapper(car->X(), car->Y(), car->getLidar()->getMap());
-
-        LogPrinter::getLogPrinter()->printLog(
-                "Car Move To: (" +
-                std::to_string(car->X()) +
-                ", " +
-                std::to_string(car->Y()) +
-                ")" +
-                " Angle: " +
-                std::to_string(int(car->Angle()))
-        );
-    }
-    else
-        LogPrinter::getLogPrinter()->printLog("Blocked!!!");
 }
 
 void Simulator::mousePressEvent(QMouseEvent *event)
@@ -163,6 +145,41 @@ void Simulator::mouseMoveEvent(QMouseEvent *event)
         map->deleteOUT(event->pos().y() / BLOCKWIDTH, event->pos().x() / BLOCKWIDTH);
         update();
     }
+}
+
+void Simulator::timerEvent(QTimerEvent *event)
+{
+    if(event->timerId() == this->timerID);
+    qDebug() << "timer event";
+
+    bool couldPass = false;
+    QMatrix matrix;
+
+    couldPass = car->move_by_vol(*map);
+
+    if (couldPass)
+    {
+        carLabel->move(car->X()/2 - BLOCKWIDTH, car->Y()/2 - BLOCKWIDTH);//QLabel的坐标是矩形左上角坐标，需要转化一下
+
+        matrix.rotate(car->Angle() + 90);//这个旋转的角度也是需要调整的
+        carLabel->setPixmap(QPixmap::fromImage(carImage.transformed(matrix)));
+
+        Viewer::getViewer()->updateViewer(car->getLidar()->getLidarMapTurn());
+        Mapper::getMapper()->updateMapper(car->X(), car->Y(), car->getLidar()->getMap());
+
+        LogPrinter::getLogPrinter()->printLog(
+                "Car Move To: (" +
+                std::to_string(car->X()) +
+                ", " +
+                std::to_string(car->Y()) +
+                ")" +
+                " Angle: " +
+                std::to_string(int(car->Angle()))
+        );
+    }
+    else
+        LogPrinter::getLogPrinter()->printLog("Blocked!!!");
+
 }
 
 void Simulator::clearMap()

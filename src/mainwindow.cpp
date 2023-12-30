@@ -1,4 +1,5 @@
 #include "include/mainwindow.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent)
@@ -9,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //把用户界面给画出来
 void MainWindow::setupUi()
 {
+    qDebug() << "start setup ui";
     if (this->objectName().isEmpty())
         this->setObjectName(QStringLiteral("MainWindow"));
 

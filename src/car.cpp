@@ -18,14 +18,14 @@ Car::Car(int x, int y, double angle, int height, int width)
 {
     this->rect_c = createRect(x, y, height, width, angle);
     this->lidar = new Lidar();
-    this->vol = 0;
+    this->vol = 2;
     this->dir = 0;
 }
 
 //车子的移动逻辑，可以移动则返回true并且更新车的位置信息
 bool Car::move_car(int key, RMap &rMap)
 {
-    int step = 10;//每次移动10个像素
+    int step = CAR_MOVE_STEP;//每次移动10个像素
     int rotate = 10;//每次转动10°
     Rectangle new_rect_c = rect_c;
 
@@ -60,6 +60,41 @@ bool Car::move_car(int key, RMap &rMap)
     lidar->buildMap();
 
     return true;
+}
+
+bool Car::move_by_vol(RMap &rMap)
+{
+    int step = CAR_MOVE_STEP;//每次移动10个像素
+    int rotate = 1;//每次转动10°
+    Rectangle new_rect_c = rect_c;
+    // 先计算转后的角度
+    new_rect_c.angle += rotate * this->dir;
+    // 运动后的位置
+    new_rect_c.x += floor(step * cos(new_rect_c.angle / 180.0 * PI))*vol;
+    new_rect_c.y += floor(step * sin(new_rect_c.angle / 180.0 * PI))*vol;
+
+    if (new_rect_c.angle < -180) new_rect_c.angle += 360;
+    if (new_rect_c.angle > 180) new_rect_c.angle -= 360;
+
+    if (check_collision(new_rect_c, rMap))
+        return false;
+
+    rect_c = new_rect_c;
+    lidar->update_carInfo(this->X(), this->Y(), (this->Angle() + 90) * PI / 180);
+    lidar->update_lidarMap(this->X() / 50, this->Y() / 50, rMap);
+    lidar->buildMap();
+
+    return true;
+}
+
+void Car::setVol(int vol)
+{
+    this->vol = vol;
+}
+
+void Car::setDir(int dir)
+{
+    this->dir = dir;
 }
 
 Lidar *Car::getLidar()

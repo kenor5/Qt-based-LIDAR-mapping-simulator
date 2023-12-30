@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QLabel>
 #include <QKeyEvent>
+#include <QTimer>
+#include <QTimerEvent>
 
 #include "include/car.h"
 #include "include/rmap.h"
@@ -39,6 +41,10 @@ protected:
 
     void mouseMoveEvent(QMouseEvent *event);
 
+    void timerEvent(QTimerEvent *event);
+
+
+
 private:
     QLabel *carLabel;//显示小车的控件
 
@@ -51,6 +57,8 @@ private:
     Serial *serial;
 
     bool click;
+
+    int timerID;
 
     void drawMap(QPainter &painter);//绘制Map
 

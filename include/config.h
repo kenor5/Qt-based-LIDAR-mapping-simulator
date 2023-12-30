@@ -29,4 +29,8 @@ const int LIDAR_SIGHT_WIDTH = 9;
 const int LIDAR_SCAN_STEP = 1;
 // 雷达最远扫描距离
 const int LIDAR_SCAN_DISTANCE_LIMIT = 284;
+
+// 小车一次移动的像素数量
+const int CAR_MOVE_STEP = 5;
+
 #endif // CONFIG_H

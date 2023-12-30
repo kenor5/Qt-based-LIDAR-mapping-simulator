@@ -21,6 +21,8 @@ public:
 
     bool move_car(int key, RMap &rMap);//车子的移动
 
+    bool move_by_vol(RMap &rMap);
+
     Lidar *getLidar();
 
     int X() const;
@@ -32,6 +34,10 @@ public:
     int Height() const;
 
     int Width() const;
+
+    void setVol(int vol);
+
+    void setDir(int dir);
 
 private:
     //使用矩形来描述小车的位置信息
