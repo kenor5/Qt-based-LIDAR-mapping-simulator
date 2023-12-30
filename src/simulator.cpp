@@ -36,7 +36,7 @@ Simulator::Simulator(QWidget *parent) :
 
     map = new RMap(MAPWIDTH, MAPWIDTH, true);
 
-//    serial = new Serial("ttyS4");
+    serial = new Serial("ttyS4");
 
     click = false;
 
@@ -85,6 +85,7 @@ void Simulator::keyPressEvent(QKeyEvent *event)
     {
         case Qt::Key_Up:
             car->setVol(step);
+            car->setDir(0);
             break;
         case Qt::Key_Down:
             car->setVol(-step);
@@ -171,10 +172,27 @@ void Simulator::moveCar()
         LogPrinter::getLogPrinter()->printLog("Blocked!!!");
 }
 
+// TODO
+void Simulator::receiveAndSet()
+{
+// 串口读数据并设置
+    // serial->readData();
+
+//    car->setDir();
+//    car->setVol();
+}
+
+void Simulator::sendDistance()
+{
+// 串口发数据
+
+}
+
 void Simulator::timerEvent(QTimerEvent *event)
 {
-    if(event->timerId() == this->timerID);
 
+//    receiveAndSet();
+//    sendDistance();
     moveCar();
 
 }

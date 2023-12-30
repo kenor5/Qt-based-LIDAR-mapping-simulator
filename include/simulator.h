@@ -34,6 +34,11 @@ public:
 
     void setMouseClick();
 
+    // 接受角度和速度并设置
+    void receiveAndSet();
+    // 发送 Distance 数组
+    void sendDistance();
+
 protected:
     void paintEvent(QPaintEvent *event);
 
@@ -44,8 +49,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
 
     void timerEvent(QTimerEvent *event);
-
-
 
 private:
     QLabel *carLabel;//显示小车的控件

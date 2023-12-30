@@ -10,7 +10,7 @@ public:
     Serial(const QString &);
     ~Serial();
     QByteArray readData();
-
+    void sendData(const QByteArray&);
 protected:
     QSerialPort *serialPort;
 };
