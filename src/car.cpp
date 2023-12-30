@@ -64,11 +64,11 @@ bool Car::move_car(int key, RMap &rMap)
 
 bool Car::move_by_vol(RMap &rMap)
 {
-    int step = CAR_MOVE_STEP;//每次移动10个像素
-    int rotate = 1;//每次转动10°
+    int step = CAR_MOVE_STEP;
+    int rotate = CAR_TURN_STEP;
     Rectangle new_rect_c = rect_c;
     // 先计算转后的角度
-    new_rect_c.angle += rotate * this->dir;
+    new_rect_c.angle += rotate * this->dir * (vol > 0?1:-1);
     // 运动后的位置
     new_rect_c.x += floor(step * cos(new_rect_c.angle / 180.0 * PI))*vol;
     new_rect_c.y += floor(step * sin(new_rect_c.angle / 180.0 * PI))*vol;
@@ -89,12 +89,14 @@ bool Car::move_by_vol(RMap &rMap)
 
 void Car::setVol(int vol)
 {
-    this->vol = vol;
+    this->vol = MIN(CAR_MAX_VOL, vol);
+    this->vol = MAX(CAR_MIN_VOL, vol);
 }
 
 void Car::setDir(int dir)
 {
-    this->dir = dir;
+    this->dir = MIN(CAR_MAX_DIR, dir);
+    this->dir = MAX(CAR_MIN_DIR, dir);
 }
 
 Lidar *Car::getLidar()

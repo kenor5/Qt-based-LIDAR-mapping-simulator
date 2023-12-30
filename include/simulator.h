@@ -20,6 +20,8 @@ class Simulator : public QWidget
 public:
     static Simulator *getSimulator(QWidget *parent = nullptr);
 
+    void moveCar();
+
     void clearMap();
 
     void creatNewMap();

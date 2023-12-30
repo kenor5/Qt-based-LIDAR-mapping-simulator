@@ -27,6 +27,8 @@ public:
 
     RMap *getMap();
 
+    int *getDistanceList();
+
     int getCar_x();
 
     int getCar_y();
@@ -45,6 +47,9 @@ private:
     RMap *lidarMap = nullptr; //保存雷达扫描得到的结果
 
     RMap *bMap = nullptr; //保存建立的地图
+
+    // 各个角度上的距离
+    int distance[360];
 
     //保存车的信息
     int car_x = 0;

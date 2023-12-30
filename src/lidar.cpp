@@ -3,6 +3,7 @@
 #include "include/logprinter.h"
 #include <cmath>
 #include <QDebug>
+#include <cstring>
 
 Lidar::Lidar()
 {
@@ -11,6 +12,8 @@ Lidar::Lidar()
     lidarMap = new RMap(100, 100, false, 4, 4);
 
     bMap = new RMap(400, 400, false, 1, 1);
+
+    memset(distance, INF, 360);
 
     this->clearMap();
     this->reMap();
@@ -43,6 +46,7 @@ void Lidar::update_lidarMap(int cx, int cy,RMap &map)
 
     int x_0 = 200;//中心点
     int y_0 = 200;//中心点
+    int mindis = INF;
 
     for (int cnt = 0; cnt < 360; cnt += LIDAR_SCAN_STEP)
     {
@@ -50,6 +54,7 @@ void Lidar::update_lidarMap(int cx, int cy,RMap &map)
         int x = 0;
         int y = 0;
         int m, n;
+        int cur_distance = INF;
 
         for (int i = 0; i < LIDAR_SCAN_DISTANCE_LIMIT; i += 1)
         {
@@ -66,11 +71,17 @@ void Lidar::update_lidarMap(int cx, int cy,RMap &map)
                 n = (y - car_x + cx * 50 + 20) / 4;
 
                 this->lidarMap->addIN(m, n);
+                cur_distance = DIS(m,n,lidarMap->getCol()/2, lidarMap->getRow()/2);
                 break;
             }
         }
+        distance[cnt] = cur_distance;
+        mindis = MIN(cur_distance, mindis);
     }
+    LogPrinter::getLogPrinter()->printLog("print distance");
+    LogPrinter::getLogPrinter()->printLog(std::to_string(mindis));
 }
+
 
 void Lidar::buildMap()
 {
@@ -124,6 +135,11 @@ void Lidar::clearMap()
 void Lidar::reMap()
 {
     bMap->clear();
+}
+
+int *Lidar::getDistanceList()
+{
+    return this->distance;
 }
 
 RMap *Lidar::getLidarMap()

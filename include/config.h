@@ -1,12 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define MAX(a,b) a>b?a:b
+#define MIN(a,b) a<b?a:b
+#define DIS(a,b,c,d) sqrt((a-c)*(a-c)+(b-d)*(b-d))
+// 频率
+const int FREQ = 10;
+// 无限远
+const int INF = 0x7fffffff;
 
-// initial location
-#define INIT_X 0
-#define INIT_Y 0
-
-// initial direction
 // 地图由多少方块组成
 const int MAPWIDTH = 32;
 // 每个方块的宽度
@@ -32,5 +34,12 @@ const int LIDAR_SCAN_DISTANCE_LIMIT = 284;
 
 // 小车一次移动的像素数量
 const int CAR_MOVE_STEP = 5;
+// 一次转动的角度
+const int CAR_TURN_STEP = 1;
+
+const int CAR_MAX_VOL = 30;
+const int CAR_MIN_VOL = -30;
+const int CAR_MAX_DIR = 30;
+const int CAR_MIN_DIR = -30;
 
 #endif // CONFIG_H

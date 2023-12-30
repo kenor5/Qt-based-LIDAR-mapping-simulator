@@ -40,7 +40,7 @@ Simulator::Simulator(QWidget *parent) :
 
     click = false;
 
-    timerID = startTimer(100);
+    timerID = startTimer(1000/FREQ);
     if (timerID == 0)
        qDebug() << "start timer error";
 
@@ -75,11 +75,6 @@ void Simulator::drawMap(QPainter &painter)
             if (map->query(i, j) == 1)
                 painter.drawRect(i * BLOCKWIDTH, j * BLOCKWIDTH, BLOCKWIDTH, BLOCKWIDTH);
 
-    //绘制起点和终点
-//    painter.setBrush(QColor(255, 0, 0));
-//    painter.drawRect(14 * 50, 0, 100, 100);
-//    painter.setBrush(QColor(0, 0, 255));
-//    painter.drawRect(0, 14 * 50, 100, 100);
 }
 
 void Simulator::keyPressEvent(QKeyEvent *event)
@@ -103,8 +98,6 @@ void Simulator::keyPressEvent(QKeyEvent *event)
         default:
             return;
     }
-
-
 
 }
 
@@ -147,11 +140,8 @@ void Simulator::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void Simulator::timerEvent(QTimerEvent *event)
+void Simulator::moveCar()
 {
-    if(event->timerId() == this->timerID);
-    qDebug() << "timer event";
-
     bool couldPass = false;
     QMatrix matrix;
 
@@ -179,6 +169,13 @@ void Simulator::timerEvent(QTimerEvent *event)
     }
     else
         LogPrinter::getLogPrinter()->printLog("Blocked!!!");
+}
+
+void Simulator::timerEvent(QTimerEvent *event)
+{
+    if(event->timerId() == this->timerID);
+
+    moveCar();
 
 }
 
